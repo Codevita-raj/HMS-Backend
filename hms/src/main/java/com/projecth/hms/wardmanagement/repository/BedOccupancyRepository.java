@@ -3,6 +3,7 @@ package com.projecth.hms.wardmanagement.repository;
 import com.projecth.hms.wardmanagement.entity.BedOccupancy;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface BedOccupancyRepository extends JpaRepository<BedOccupancy, Long> {
@@ -13,5 +14,7 @@ public interface BedOccupancyRepository extends JpaRepository<BedOccupancy, Long
     Optional<BedOccupancy> findByAdmissionIdAndOccupiedTillIsNull(Long admissionId);
 
     Optional<BedOccupancy> findTopByAdmissionIdOrderByOccupiedFromDesc(Long admissionId);
+
+    List<BedOccupancy> findByAdmissionId(Long admissionId);
 }
 

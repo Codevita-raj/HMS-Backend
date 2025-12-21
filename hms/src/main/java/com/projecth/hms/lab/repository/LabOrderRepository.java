@@ -9,5 +9,7 @@ public interface LabOrderRepository extends JpaRepository<LabOrder, Long> {
     List<LabOrder> findByPatientId(Long patientId);
 
     List<LabOrder> findByAdmissionId(Long admissionId);
+    List<Long> findIdsByAdmissionId(Long admissionId);
+
 }
 

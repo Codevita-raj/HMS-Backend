@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 public class RegisterResponse {
     private Long id;
     private String email;
-    private String phone;
+//    private String phone;
     private String role;
     private String status;
     private LocalDateTime createdAt;

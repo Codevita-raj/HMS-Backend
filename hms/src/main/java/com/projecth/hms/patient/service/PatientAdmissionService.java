@@ -1,6 +1,9 @@
 package com.projecth.hms.patient.service;
 
+import com.projecth.hms.billing.service.BillingHookService;
+import com.projecth.hms.inventory.repository.InventoryTransactionRepository;
 import com.projecth.hms.lab.repository.LabOrderItemRepository;
+import com.projecth.hms.lab.repository.LabOrderRepository;
 import com.projecth.hms.patient.dto.AdmissionCreateRequest;
 import com.projecth.hms.patient.dto.AdmissionDischargeRequest;
 import com.projecth.hms.patient.dto.AdmissionResponse;
@@ -12,6 +15,7 @@ import com.projecth.hms.patient.repository.PatientAdmissionRepository;
 import com.projecth.hms.patient.repository.PatientCareAssignmentRepository;
 import com.projecth.hms.patient.repository.PatientRepository;
 import com.projecth.hms.shared.enums.AdmissionStatus;
+import com.projecth.hms.shared.enums.InventoryTransactionType;
 import com.projecth.hms.shared.enums.LabSampleStatus;
 import com.projecth.hms.wardmanagement.dto.bedOccupancy.BedOccupancyRequest;
 import com.projecth.hms.wardmanagement.entity.BedOccupancy;
@@ -34,6 +38,10 @@ public class PatientAdmissionService {
     private final BedOccupancyService bedOccupancyService;
     private final BedOccupancyRepository bedOccupancyRepository;
     private final LabOrderItemRepository labOrderItemRepository;
+    private final LabOrderRepository labOrderRepository;
+    private final InventoryTransactionRepository inventoryTransactionRepository;
+    private final BillingHookService billingHookService;
+
 
     @Transactional
     public AdmissionResponse createAdmission(AdmissionCreateRequest admissionCreateRequest){
@@ -128,20 +136,10 @@ public class PatientAdmissionService {
         if (dischargeDate.isBefore(patientAdmission.getAdmissionDate())){
             throw new RuntimeException("Discharge date cannot be before Admission date ");
         }
-//        boolean pendingLabTests =
-//                labOrderItemRepository.existsByAdmissionIdAndSampleStatusIn(
-//                        admissionId,
-//                        List.of(
-//                                LabSampleStatus.NOT_COLLECTED,
-//                                LabSampleStatus.COLLECTED
-//                        )
-//                );
-//
-//        if (pendingLabTests) {
-//            throw new RuntimeException(
-//                    "Cannot discharge patient. Pending lab tests exist."
-//            );
-//        }
+
+        validateLabClearance(admissionId);
+
+        validateMedicineClearance(admissionId);
 
         List<PatientCareAssignment> activeAssignments =
                 patientCareAssignmentRepository
@@ -159,7 +157,10 @@ public class PatientAdmissionService {
         patientAdmission.setStatus(AdmissionStatus.DISCHARGED);
         patientAdmission.setUpdatedAt(LocalDateTime.now());
         patientAdmission.setUpdatedBy("SYSTEM");
+
         bedOccupancyService.freeBedByAdmission(admissionId);
+        //billingHookService.onDischarge(admissionId);
+
         return toMapAdmissionResponse(patientAdmissionRepository.save(patientAdmission));
     }
 
@@ -179,6 +180,57 @@ public class PatientAdmissionService {
         return toMapAdmissionResponse(patientAdmission);
     }
     //Helper Methods
+
+    public void validateLabClearance(Long admissionId) {
+
+
+        List<Long> labOrderIds =
+                labOrderRepository.findIdsByAdmissionId(admissionId);
+
+        if (labOrderIds.isEmpty()) {
+            return;
+        }
+
+        boolean hasPendingLabs =
+                labOrderItemRepository
+                        .existsByLabOrderIdInAndSampleStatusIn(
+                                labOrderIds,
+                                List.of(
+                                        LabSampleStatus.NOT_COLLECTED,
+                                        LabSampleStatus.COLLECTED,
+                                        LabSampleStatus.IN_PROGRESS
+                                )
+                        );
+
+        if (hasPendingLabs) {
+            throw new RuntimeException(
+                    "Cannot discharge patient: Pending lab tests exist"
+            );
+        }
+    }
+
+
+    private void validateMedicineClearance(Long admissionId) {
+
+        int issuedQty = inventoryTransactionRepository
+                .sumQuantityByAdmissionAndType(
+                        admissionId,
+                        InventoryTransactionType.OUT
+                );
+
+        int returnedQty = inventoryTransactionRepository
+                .sumQuantityByAdmissionAndType(
+                        admissionId,
+                        InventoryTransactionType.RETURN
+                );
+
+        if (issuedQty > returnedQty) {
+            throw new RuntimeException(
+                    "Cannot discharge patient: Pending medicine quantity not returned"
+            );
+        }
+    }
+
     private AdmissionResponse toMapAdmissionResponse(PatientAdmission patientAdmission){
         Long currentBedId = bedOccupancyRepository
                 .findTopByAdmissionIdOrderByOccupiedFromDesc(patientAdmission.getAdmissionId())

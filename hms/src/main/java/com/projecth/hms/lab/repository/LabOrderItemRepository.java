@@ -11,10 +11,12 @@ public interface LabOrderItemRepository extends JpaRepository<LabOrderItem, Long
     boolean existsByLabOrderIdAndSampleStatusNot(
             Long labOrderId, LabSampleStatus status);
 
-//    boolean existsByAdmissionIdAndSampleStatusIn(
-//            Long admissionId,
-//            List<LabSampleStatus> statuses
-//    );
+    boolean existsByLabOrderIdInAndSampleStatusIn(
+            List<Long> labOrderIds,
+            List<LabSampleStatus> statuses
+    );
 
+
+    List<LabOrderItem> findByLabOrderIdIn(List<Long> labOrderIds);
 }
 

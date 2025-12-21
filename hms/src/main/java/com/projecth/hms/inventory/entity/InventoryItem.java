@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -26,6 +27,7 @@ public class InventoryItem {
     @Enumerated(EnumType.STRING)
     private InventoryUnit unit;
 
+    private BigDecimal unitPrice;
     private String description;
 
     private Boolean active;

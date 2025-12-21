@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Entity
 @Table(name = "beds")
 @Getter
@@ -16,6 +18,8 @@ public class Bed {
     private Long id;
 
     private String bedNumber;
+
+    private BigDecimal dailyCharge;
 
     @Enumerated(EnumType.STRING)
     private BedStatus status;
