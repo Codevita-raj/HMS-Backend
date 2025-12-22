@@ -4,6 +4,7 @@ import com.projecth.hms.auth.dto.AdminCreateUserRequest;
 import com.projecth.hms.auth.dto.AdminCreateUserResponse;
 import com.projecth.hms.security.validator.RoleValidator;
 import com.projecth.hms.shared.enums.UserStatus;
+import com.projecth.hms.shared.notifications.EmailService;
 import com.projecth.hms.user.entity.PasswordResetToken;
 import com.projecth.hms.user.entity.User;
 import com.projecth.hms.user.repository.PasswordResetTokenRepository;
@@ -23,7 +24,7 @@ public class AdminUserService {
     private final UserRepository userRepository;
     private final PasswordResetTokenRepository tokenRepository;
     private final RoleValidator roleValidator;
-
+    private final EmailService emailService;
 
     private User getCurrentAdmin() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -64,7 +65,13 @@ public class AdminUserService {
         tokenRepository.save(token);
 
 
-        System.out.println("Password setup link: /set-password?token=" + token.getToken());
+        emailService.sendEmail(
+                savedUser.getEmail(),
+                "Set your HMS password",
+                "Click the link to set password:\n\n" +
+                        "http://localhost:8080/api/v1/auth/set/password?token=" + token.getToken()
+        );
+
 
         return AdminCreateUserResponse.builder()
                 .id(savedUser.getId())
