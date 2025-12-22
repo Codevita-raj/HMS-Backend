@@ -64,14 +64,13 @@ public class AdminUserService {
 
         tokenRepository.save(token);
 
-
         emailService.sendEmail(
                 savedUser.getEmail(),
-                "Set your HMS password",
-                "Click the link to set password:\n\n" +
-                        "http://localhost:8080/api/v1/auth/set/password?token=" + token.getToken()
+                "Set your HSMS password",
+                savedUser.getEmail(),
+                "You have been added to HSMS App. Please set your password using the link below:",
+                "http://localhost:8080/set-password?token=" + token.getToken()
         );
-
 
         return AdminCreateUserResponse.builder()
                 .id(savedUser.getId())

@@ -5,6 +5,7 @@ import com.projecth.hms.lab.dto.labOrder.SampleCollectRequest;
 import com.projecth.hms.lab.service.LabSampleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -14,6 +15,7 @@ public class LabSampleController {
 
     private final LabSampleService labSampleService;
 
+    @PreAuthorize("hasAnyRole('LAB_TECHNICIAN')")
     @PatchMapping("/lab/samples/{itemId}/collect")
     public ResponseEntity<Void> collectSample(
             @PathVariable Long itemId,
@@ -22,7 +24,7 @@ public class LabSampleController {
         labSampleService.collectSample(itemId, request);
         return ResponseEntity.ok().build();
     }
-
+    @PreAuthorize("hasAnyRole('LAB_TECHNICIAN')")
     @PatchMapping("/lab/samples/{itemId}/result")
     public ResponseEntity<Void> enterResult(
             @PathVariable Long itemId,

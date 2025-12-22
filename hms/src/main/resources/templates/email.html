@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HSMS App Notification</title>
+  <style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f4f6f8;
+        margin: 0;
+        padding: 0;
+    }
+    .container {
+        max-width: 600px;
+        margin: 30px auto;
+        background-color: #ffffff;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .header {
+        background-color: #007bff;
+        color: #ffffff;
+        padding: 20px;
+        text-align: center;
+        font-size: 24px;
+        font-weight: bold;
+    }
+    .body {
+        padding: 30px;
+        color: #333333;
+        line-height: 1.6;
+    }
+    .body p {
+        margin: 16px 0;
+    }
+    .button {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 12px 20px;
+        background-color: #28a745;
+        color: #ffffff !important;
+        text-decoration: none;
+        border-radius: 5px;
+        font-weight: bold;
+    }
+    .footer {
+        background-color: #f1f1f1;
+        color: #777777;
+        text-align: center;
+        font-size: 12px;
+        padding: 20px;
+    }
+    @media only screen and (max-width: 600px) {
+        .container {
+            width: 95%;
+        }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    HSMS App
+  </div>
+  <div class="body">
+    <p>Hello <strong>{{username}}</strong>,</p>
+    <p>{{message}}</p>
+    <p>
+      <a href="{{action_link}}" class="button">Click Here</a>
+    </p>
+    <p>If you did not request this, please ignore this email.</p>
+  </div>
+  <div class="footer">
+    &copy; 2025 HSMS App. All rights reserved.
+  </div>
+</div>
+</body>
+</html>

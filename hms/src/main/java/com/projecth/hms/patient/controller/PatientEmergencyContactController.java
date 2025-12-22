@@ -6,6 +6,7 @@ import com.projecth.hms.patient.service.PatientEmergencyContactService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,7 +17,7 @@ import java.util.List;
 public class PatientEmergencyContactController {
 
     private final PatientEmergencyContactService contactService;
-
+    @PreAuthorize("hasAnyRole('ADMIN','RECEPTIONIST','PATIENT')")
     @PostMapping("/patients/emergency/contacts/{patientId}")
     public ResponseEntity<EmergencyContactResponse> addContact(
             @PathVariable Long patientId,
@@ -26,7 +27,7 @@ public class PatientEmergencyContactController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(contactService.addContact(request));
     }
-
+    @PreAuthorize("hasAnyRole('ADMIN','PATIENT')")
     @PutMapping("/patients/emergency/contacts/{contactId}")
     public ResponseEntity<EmergencyContactResponse> updateContact(
             @PathVariable Long contactId,
@@ -35,7 +36,7 @@ public class PatientEmergencyContactController {
         return ResponseEntity.ok(
                 contactService.updateContact(contactId, request));
     }
-
+    @PreAuthorize("hasAnyRole('ADMIN','RECEPTIONIST','PATIENT')")
     @GetMapping("/patients/emergency/contacts/{patientId}")
     public ResponseEntity<List<EmergencyContactResponse>> getContacts(
             @PathVariable Long patientId) {
