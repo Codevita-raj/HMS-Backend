@@ -1,4 +1,4 @@
-package com.projecth.hms.shared.config;
+package com.projecth.hms.security.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

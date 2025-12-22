@@ -9,6 +9,8 @@ import com.projecth.hms.lab.repository.LabOrderItemRepository;
 import com.projecth.hms.lab.repository.LabOrderRepository;
 import com.projecth.hms.shared.enums.LabOrderStatus;
 import com.projecth.hms.shared.enums.LabSampleStatus;
+import com.projecth.hms.user.entity.User;
+import com.projecth.hms.user.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,10 +24,11 @@ public class LabOrderService {
 
     private final LabOrderRepository labOrderRepository;
     private final LabOrderItemRepository labOrderItemRepository;
+    private final UserService userService;
 
     @Transactional
     public LabOrderResponse createLabOrder(LabOrderRequest request) {
-
+        User currentUser = userService.getCurrentUser();
         LabOrder order = new LabOrder();
         order.setPatientId(request.getPatientId());
         order.setAdmissionId(request.getAdmissionId());
@@ -33,7 +36,7 @@ public class LabOrderService {
         order.setStatus(LabOrderStatus.ORDERED);
         order.setOrderedAt(LocalDateTime.now());
         order.setCreatedAt(LocalDateTime.now());
-        order.setCreatedBy("SYSTEM");
+        order.setCreatedBy(currentUser.getEmail());
 
         LabOrder savedOrder = labOrderRepository.save(order);
 

@@ -88,7 +88,7 @@ public class PatientProfileService {
         Long activeAdmissionId =
                 activeAdmission.map(PatientAdmission::getAdmissionId).orElse(null);
 
-        // ✅ Final Aggregated Response
+        //  Final Aggregated Response
         return PatientProfileResponse.builder()
                 .patient(patientResponse)
                 .medicalProfile(medicalProfile)

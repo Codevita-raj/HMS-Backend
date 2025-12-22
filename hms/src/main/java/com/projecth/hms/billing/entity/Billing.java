@@ -33,5 +33,6 @@ public class Billing {
     private BillStatus status; // DRAFT, GENERATED, PAID, CANCELLED
 
     private LocalDateTime generatedAt;
+    private String generatedBy;
 }
 

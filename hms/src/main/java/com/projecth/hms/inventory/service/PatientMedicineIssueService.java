@@ -5,6 +5,8 @@ import com.projecth.hms.inventory.dto.PatientMedicineIssueRequest;
 import com.projecth.hms.inventory.entity.PatientMedicineIssue;
 import com.projecth.hms.inventory.repository.PatientMedicineIssueRepository;
 import com.projecth.hms.shared.enums.InventoryTransactionType;
+import com.projecth.hms.user.entity.User;
+import com.projecth.hms.user.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,10 +19,10 @@ public class PatientMedicineIssueService {
 
     private final PatientMedicineIssueRepository issueRepository;
     private final InventoryTransactionService transactionService;
-
+    private final UserService userService;
     @Transactional
     public void issueMedicine(PatientMedicineIssueRequest request) {
-
+        User currentUser = userService.getCurrentUser();
         //  Save Issue Record
         PatientMedicineIssue issue = new PatientMedicineIssue();
         issue.setPatientId(request.getPatientId());
@@ -30,8 +32,8 @@ public class PatientMedicineIssueService {
         issue.setQuantity(request.getQuantity());
         issue.setRemarks(request.getRemarks());
         issue.setIssuedAt(LocalDateTime.now());
-        issue.setIssuedBy("NURSE");
-        issue.setCreatedBy("SYSTEM");
+        issue.setIssuedBy(currentUser.getEmail());
+        issue.setCreatedBy(currentUser.getEmail());
 
         issueRepository.save(issue);
 

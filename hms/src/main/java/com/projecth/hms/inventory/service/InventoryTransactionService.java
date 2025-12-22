@@ -4,6 +4,8 @@ import com.projecth.hms.inventory.dto.InventoryTransactionRequest;
 import com.projecth.hms.inventory.entity.InventoryTransaction;
 import com.projecth.hms.inventory.repository.InventoryTransactionRepository;
 import com.projecth.hms.shared.enums.InventoryTransactionType;
+import com.projecth.hms.user.entity.User;
+import com.projecth.hms.user.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,10 +18,11 @@ public class InventoryTransactionService {
 
     private final InventoryTransactionRepository transactionRepository;
     private final InventoryStockService stockService;
+    private final UserService userService;
 
     @Transactional
     public void createTransaction(InventoryTransactionRequest request) {
-
+        User currentUser = userService.getCurrentUser();
         //  Persist transaction first (audit-safe)
         InventoryTransaction tx = new InventoryTransaction();
         tx.setItemId(request.getItemId());
@@ -31,7 +34,7 @@ public class InventoryTransactionService {
         tx.setReferenceId(request.getReferenceId());
         tx.setRemarks(request.getRemarks());
         tx.setTransactionAt(LocalDateTime.now());
-        tx.setCreatedBy("SYSTEM");
+        tx.setCreatedBy(currentUser.getEmail());
 
         transactionRepository.save(tx);
 

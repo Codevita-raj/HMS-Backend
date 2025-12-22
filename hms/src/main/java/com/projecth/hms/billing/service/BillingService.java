@@ -6,6 +6,8 @@ import com.projecth.hms.billing.entity.BillingItem;
 import com.projecth.hms.billing.repository.BillingItemRepository;
 import com.projecth.hms.billing.repository.BillingRepository;
 import com.projecth.hms.shared.enums.BillStatus;
+import com.projecth.hms.user.entity.User;
+import com.projecth.hms.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,10 +24,11 @@ public class BillingService {
     private final BillingRepository billingRepository;
     private final BillingItemRepository billingItemRepository;
     private final BillingAggregationService billingAggregationService;
+    private final UserService userService;
 
     @Transactional
     public Billing generateBilling(Long admissionId, Long patientId) {
-        //  Aggregate all charges (DTOs)
+         User currentUser = userService.getCurrentUser();
         List<BillingItemDTO> aggregatedItems = billingAggregationService.aggregateCharges(admissionId);
 
         if (aggregatedItems.isEmpty()) {
@@ -51,6 +54,7 @@ public class BillingService {
         billing.setNetPayable(netPayable);
         billing.setStatus(BillStatus.DRAFT);
         billing.setGeneratedAt(LocalDateTime.now());
+        billing.setGeneratedBy(currentUser.getEmail());
 
         Billing savedBilling = billingRepository.save(billing);
 

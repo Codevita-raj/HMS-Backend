@@ -1,6 +1,6 @@
 package com.projecth.hms.user.service;
 
-import com.projecth.hms.user.entity.CustomUserDetails;
+import com.projecth.hms.security.user.CustomUserDetails;
 import com.projecth.hms.user.entity.User;
 import com.projecth.hms.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,14 +15,9 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
-    @Override
-    public UserDetails loadUserByUsername(String username)
-            throws UsernameNotFoundException {
-
-        User user = userRepository.findByEmail(username)
-                .orElseThrow(() ->
-                        new UsernameNotFoundException("User not found"));
-
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
         return new CustomUserDetails(user);
     }
 }

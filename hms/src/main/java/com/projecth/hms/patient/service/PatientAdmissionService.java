@@ -1,6 +1,5 @@
 package com.projecth.hms.patient.service;
 
-import com.projecth.hms.billing.service.BillingHookService;
 import com.projecth.hms.inventory.repository.InventoryTransactionRepository;
 import com.projecth.hms.lab.repository.LabOrderItemRepository;
 import com.projecth.hms.lab.repository.LabOrderRepository;
@@ -17,6 +16,8 @@ import com.projecth.hms.patient.repository.PatientRepository;
 import com.projecth.hms.shared.enums.AdmissionStatus;
 import com.projecth.hms.shared.enums.InventoryTransactionType;
 import com.projecth.hms.shared.enums.LabSampleStatus;
+import com.projecth.hms.user.entity.User;
+import com.projecth.hms.user.service.UserService;
 import com.projecth.hms.wardmanagement.dto.bedOccupancy.BedOccupancyRequest;
 import com.projecth.hms.wardmanagement.entity.BedOccupancy;
 import com.projecth.hms.wardmanagement.repository.BedOccupancyRepository;
@@ -40,11 +41,14 @@ public class PatientAdmissionService {
     private final LabOrderItemRepository labOrderItemRepository;
     private final LabOrderRepository labOrderRepository;
     private final InventoryTransactionRepository inventoryTransactionRepository;
-    private final BillingHookService billingHookService;
+    private final UserService userService;
 
 
     @Transactional
     public AdmissionResponse createAdmission(AdmissionCreateRequest admissionCreateRequest){
+
+        User currentUser = userService.getCurrentUser();
+
 
         Long patientId = admissionCreateRequest.getPatientId();
 
@@ -67,9 +71,9 @@ public class PatientAdmissionService {
 
         patientAdmission.setStatus(AdmissionStatus.ADMITTED);
         patientAdmission.setCreatedAt(LocalDateTime.now());
-        patientAdmission.setCreatedBy("SYSTEM");
+        patientAdmission.setCreatedBy(currentUser.getEmail());
         patientAdmission.setUpdatedAt(LocalDateTime.now());
-        patientAdmission.setUpdatedBy("SYSTEM");
+        patientAdmission.setUpdatedBy(currentUser.getEmail());
         PatientAdmission savedAdmission =
                 patientAdmissionRepository.save(patientAdmission);
 
@@ -89,7 +93,7 @@ public class PatientAdmissionService {
 
     @Transactional
     public AdmissionResponse updateAdmission(Long admissionId , AdmissionUpdateRequest admissionUpdateRequest){
-
+        User currentUser = userService.getCurrentUser();
       //  Long patientId = admissionUpdateRequest.getPatientId();
 
 //        Patient patient=  patientRepository.findById(patientId)
@@ -108,7 +112,7 @@ public class PatientAdmissionService {
         patientAdmission.setReasonForAdmission(admissionUpdateRequest.getReasonForAdmission());
 
         patientAdmission.setUpdatedAt(LocalDateTime.now());
-        patientAdmission.setUpdatedBy("SYSTEM");
+        patientAdmission.setUpdatedBy(currentUser.getEmail());
         PatientAdmission savedAdmission =
                 patientAdmissionRepository.save(patientAdmission);
         if (admissionUpdateRequest.getBedId() != null) {
@@ -124,6 +128,7 @@ public class PatientAdmissionService {
     }
     @Transactional
     public AdmissionResponse dischargeAdmission(Long admissionId, AdmissionDischargeRequest admissionDischargeRequest){
+        User currentUser = userService.getCurrentUser();
         PatientAdmission patientAdmission = patientAdmissionRepository.findById(admissionId)
                 .orElseThrow(()-> new RuntimeException("Admission not found with id "+admissionId));
 
@@ -156,7 +161,7 @@ public class PatientAdmissionService {
         patientAdmission.setRemarks(admissionDischargeRequest.getRemarks());
         patientAdmission.setStatus(AdmissionStatus.DISCHARGED);
         patientAdmission.setUpdatedAt(LocalDateTime.now());
-        patientAdmission.setUpdatedBy("SYSTEM");
+        patientAdmission.setUpdatedBy(currentUser.getEmail());
 
         bedOccupancyService.freeBedByAdmission(admissionId);
         //billingHookService.onDischarge(admissionId);

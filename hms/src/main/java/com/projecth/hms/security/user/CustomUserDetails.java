@@ -1,11 +1,14 @@
-package com.projecth.hms.user.entity;
+package com.projecth.hms.security.user;
 
+import com.projecth.hms.user.entity.User;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
 
+@Getter
 public class CustomUserDetails implements UserDetails {
 
     private final User user;
@@ -16,7 +19,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.emptyList(); // no roles for now
+        return Collections.emptyList();
     }
 
     @Override
@@ -33,5 +36,26 @@ public class CustomUserDetails implements UserDetails {
     @Override public boolean isAccountNonLocked() { return true; }
     @Override public boolean isCredentialsNonExpired() { return true; }
     @Override public boolean isEnabled() { return true; }
+
+//
+//    @Override
+//    public boolean isAccountNonExpired() {
+//        return user.getStatus() == null || user.getStatus() != null; // optional
+//    }
+//
+//    @Override
+//    public boolean isAccountNonLocked() {
+//        return user.getStatus() != null && user.getStatus() == null; // optional
+//    }
+//
+//    @Override
+//    public boolean isCredentialsNonExpired() {
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean isEnabled() {
+//        return user.getStatus() == null || user.getStatus() == null; // optional
+//    }
 }
 
