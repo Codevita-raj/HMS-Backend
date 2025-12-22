@@ -1,6 +1,7 @@
 package com.projecth.hms.user.service;
 
 import com.projecth.hms.shared.enums.UserStatus;
+import com.projecth.hms.shared.notifications.EmailService;
 import com.projecth.hms.user.dto.*;
 import com.projecth.hms.user.entity.PasswordResetToken;
 import com.projecth.hms.user.entity.User;
@@ -20,6 +21,7 @@ public class PasswordService {
     private final PasswordResetTokenRepository tokenRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
     public SetPasswordResponse setPassword(SetPasswordRequest request) {
 
@@ -42,6 +44,11 @@ public class PasswordService {
 
         userRepository.save(user);
         tokenRepository.save(token);
+        emailService.sendEmail(
+                user.getEmail(),
+                "Password Changed",
+                "Your password was successfully changed."
+        );
 
         return SetPasswordResponse.builder()
                 .message("Password set successfully")
@@ -68,6 +75,11 @@ public class PasswordService {
         user.setUpdatedAt(LocalDateTime.now());
 
         userRepository.save(user);
+        emailService.sendEmail(
+                user.getEmail(),
+                "Password Changed",
+                "Your password was successfully changed."
+        );
 
         return ChangePasswordResponse.builder()
                 .message("Password changed successfully")
@@ -86,8 +98,13 @@ public class PasswordService {
 
         tokenRepository.save(token);
 
+        emailService.sendEmail(
+                user.getEmail(),
+                "Reset your HMS password",
+                "Click the link to reset password:\n\n" +
+                        "http://localhost:8080/api/v1/auth/forgot/password?token=" + token.getToken()
+        );
 
-        System.out.println("Reset password link: /reset-password?token=" + token.getToken());
     }
 }
 

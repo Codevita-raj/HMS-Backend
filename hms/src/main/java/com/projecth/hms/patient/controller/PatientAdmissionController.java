@@ -8,6 +8,7 @@ import com.projecth.hms.patient.service.PatientAdmissionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.List;
 public class PatientAdmissionController {
 
     private final PatientAdmissionService patientAdmissionService;
+    @PreAuthorize("hasAnyRole('ADMIN','RECEPTIONIST')")
     @PostMapping("/admission")
     public ResponseEntity<AdmissionResponse> createAdmission(@RequestBody AdmissionCreateRequest admissionCreateRequest){
         AdmissionResponse patientAdmission = patientAdmissionService.createAdmission(admissionCreateRequest);
