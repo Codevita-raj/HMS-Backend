@@ -44,11 +44,19 @@ public class PasswordService {
 
         userRepository.save(user);
         tokenRepository.save(token);
+
+        String username = user.getEmail();
+        String message = "Your password was successfully changed.";
+        String actionLink = "";
+
         emailService.sendEmail(
                 user.getEmail(),
-                "Password Changed",
-                "Your password was successfully changed."
+                "HSMS App - Password Changed",
+                username,
+                message,
+                actionLink
         );
+
 
         return SetPasswordResponse.builder()
                 .message("Password set successfully")
@@ -75,12 +83,18 @@ public class PasswordService {
         user.setUpdatedAt(LocalDateTime.now());
 
         userRepository.save(user);
+
+        String username = user.getEmail();
+        String message = "Your password was successfully changed.";
+        String actionLink = "";
+
         emailService.sendEmail(
                 user.getEmail(),
-                "Password Changed",
-                "Your password was successfully changed."
+                "HSMS App - Password Changed",
+                username,
+                message,
+                actionLink
         );
-
         return ChangePasswordResponse.builder()
                 .message("Password changed successfully")
                 .build();
@@ -98,11 +112,16 @@ public class PasswordService {
 
         tokenRepository.save(token);
 
+        String username = user.getEmail();
+        String message = "Welcome to HSMS App. Please, Reset your HMS password using the link below:";
+        String actionLink ="http://localhost:8080/set-password?token=" + token.getToken();
+
         emailService.sendEmail(
                 user.getEmail(),
-                "Reset your HMS password",
-                "Click the link to reset password:\n\n" +
-                        "http://localhost:8080/api/v1/auth/forgot/password?token=" + token.getToken()
+                "HSMS App - Password Changed",
+                username,
+                message,
+                actionLink
         );
 
     }

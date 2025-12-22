@@ -6,17 +6,19 @@ import com.projecth.hms.patient.service.PatientCareAssignmentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/assignments")
+@RequestMapping("/api/v1")
 @RequiredArgsConstructor
 public class PatientCareAssignmentController {
     private final PatientCareAssignmentService patientCareAssignmentService;
 
-    @PostMapping
+    @PostMapping("/assignments")
+    @PreAuthorize("hasAnyRole('ADMIN','DOCTOR')")
     public ResponseEntity<AssignmentResponse> assignStaff(
             @RequestBody AssignmentRequest assignmentRequest
     ) {
@@ -24,7 +26,8 @@ public class PatientCareAssignmentController {
                 patientCareAssignmentService.assignStaff(assignmentRequest);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
-    @PutMapping("/{assignmentId}/end")
+    @PreAuthorize("hasAnyRole('ADMIN','DOCTOR')")
+    @PutMapping("/assignments/{assignmentId}/end")
     public ResponseEntity<AssignmentResponse> endAssignment(
             @PathVariable Long assignmentId
     ) {
@@ -32,8 +35,8 @@ public class PatientCareAssignmentController {
                 patientCareAssignmentService.endAssignment(assignmentId);
         return ResponseEntity.ok(response);
     }
-
-    @GetMapping("/admission/{admissionId}")
+    @PreAuthorize("hasAnyRole('ADMIN','DOCTOR','NURSE')")
+    @GetMapping("/assignments/admission/{admissionId}")
     public ResponseEntity<List<AssignmentResponse>> getAssignmentsByAdmission(
             @PathVariable Long admissionId
     ) {

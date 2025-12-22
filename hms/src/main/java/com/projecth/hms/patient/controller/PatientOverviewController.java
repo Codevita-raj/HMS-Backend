@@ -4,6 +4,7 @@ import com.projecth.hms.patient.dto.PatientOverviewResponse;
 import com.projecth.hms.patient.service.PatientOverviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 public class PatientOverviewController {
 
     private final PatientOverviewService patientOverviewService;
-
+    @PreAuthorize("hasAnyRole('ADMIN','DOCTOR','NURSE')")
     @GetMapping("/patients/overview/{patientId}")
     public ResponseEntity<PatientOverviewResponse> getPatientAggregate(
             @PathVariable Long patientId) {
