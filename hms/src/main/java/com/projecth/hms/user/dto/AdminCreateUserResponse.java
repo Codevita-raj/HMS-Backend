@@ -1,4 +1,4 @@
-package com.projecth.hms.auth.dto;
+package com.projecth.hms.user.dto;
 
 import lombok.Builder;
 import lombok.Getter;

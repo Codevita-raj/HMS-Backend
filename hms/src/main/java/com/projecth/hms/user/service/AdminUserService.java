@@ -1,7 +1,7 @@
-package com.projecth.hms.auth.service;
+package com.projecth.hms.user.service;
 
-import com.projecth.hms.auth.dto.AdminCreateUserRequest;
-import com.projecth.hms.auth.dto.AdminCreateUserResponse;
+import com.projecth.hms.user.dto.AdminCreateUserRequest;
+import com.projecth.hms.user.dto.AdminCreateUserResponse;
 import com.projecth.hms.security.validator.RoleValidator;
 import com.projecth.hms.shared.enums.UserStatus;
 import com.projecth.hms.shared.notifications.EmailService;
@@ -12,6 +12,7 @@ import com.projecth.hms.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -25,6 +26,7 @@ public class AdminUserService {
     private final PasswordResetTokenRepository tokenRepository;
     private final RoleValidator roleValidator;
     private final EmailService emailService;
+    private final PasswordEncoder passwordEncoder;
 
     private User getCurrentAdmin() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -52,7 +54,7 @@ public class AdminUserService {
                 .status(UserStatus.INACTIVE)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
-                .password("TEMP")
+                .password(passwordEncoder.encode(UUID.randomUUID().toString()))
                 .build();
 
         User savedUser = userRepository.save(user);

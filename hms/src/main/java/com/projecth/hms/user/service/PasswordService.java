@@ -1,5 +1,6 @@
 package com.projecth.hms.user.service;
 
+import com.projecth.hms.auth.service.RefreshTokenService;
 import com.projecth.hms.shared.enums.UserStatus;
 import com.projecth.hms.shared.notifications.EmailService;
 import com.projecth.hms.user.dto.*;
@@ -7,6 +8,7 @@ import com.projecth.hms.user.entity.PasswordResetToken;
 import com.projecth.hms.user.entity.User;
 import com.projecth.hms.user.repository.PasswordResetTokenRepository;
 import com.projecth.hms.user.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,7 +24,9 @@ public class PasswordService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
+    private final RefreshTokenService refreshTokenService;
 
+    @Transactional
     public SetPasswordResponse setPassword(SetPasswordRequest request) {
 
         PasswordResetToken token = tokenRepository
@@ -41,7 +45,7 @@ public class PasswordService {
         user.setUpdatedAt(LocalDateTime.now());
 
         token.setUsed(true);
-
+        refreshTokenService.revokeAllUserTokens(user);
         userRepository.save(user);
         tokenRepository.save(token);
 
@@ -57,13 +61,12 @@ public class PasswordService {
                 actionLink
         );
 
-
         return SetPasswordResponse.builder()
                 .message("Password set successfully")
                 .build();
     }
 
-
+@Transactional
     public ChangePasswordResponse changePassword(
             Long userId,
             ChangePasswordRequest request
@@ -81,7 +84,7 @@ public class PasswordService {
 
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         user.setUpdatedAt(LocalDateTime.now());
-
+        refreshTokenService.revokeAllUserTokens(user);
         userRepository.save(user);
 
         String username = user.getEmail();
@@ -95,6 +98,7 @@ public class PasswordService {
                 message,
                 actionLink
         );
+
         return ChangePasswordResponse.builder()
                 .message("Password changed successfully")
                 .build();

@@ -7,20 +7,20 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 public class PasswordController {
 
     private final PasswordService passwordService;
 
-    @PostMapping("/auth/set/password")
+    @PostMapping("/set/password")
     public ResponseEntity<SetPasswordResponse> setPassword(
             @RequestBody SetPasswordRequest request) {
 
         return ResponseEntity.ok(passwordService.setPassword(request));
     }
 
-    @PostMapping("/auth/change/password")
+    @PostMapping("/change/password")
     public ResponseEntity<ChangePasswordResponse> changePassword(
             @RequestParam Long userId,
             @RequestBody ChangePasswordRequest request
@@ -30,7 +30,7 @@ public class PasswordController {
         );
     }
 
-    @PostMapping("/auth/forgot/password")
+    @PostMapping("/forgot/password")
     public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest request) {
         passwordService.forgotPassword(request);
         return ResponseEntity.ok("Password reset link sent");

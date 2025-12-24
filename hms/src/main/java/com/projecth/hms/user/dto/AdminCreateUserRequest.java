@@ -1,4 +1,4 @@
-package com.projecth.hms.auth.dto;
+package com.projecth.hms.user.dto;
 
 import com.projecth.hms.shared.enums.Role;
 import lombok.Getter;
