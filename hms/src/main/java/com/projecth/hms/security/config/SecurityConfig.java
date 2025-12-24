@@ -1,6 +1,8 @@
 package com.projecth.hms.security.config;
 
 import com.projecth.hms.security.filter.JwtAuthenticationFilter;
+import com.projecth.hms.security.oAuth.CustomOAuth2UserService;
+import com.projecth.hms.security.oAuth.OAuth2SuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +21,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final CustomOAuth2UserService customOAuth2UserService; // add this
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
@@ -31,6 +36,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "api/v1/auth/register",
                                 "api/v1/auth/login",
+                                "api/v1/auth/refresh",
+                                "api/v1/auth/logout",
                                 "api/v1/admin/users",
                                 "api/v1/auth/set/password",
                                 "api/v1/auth/change/password",
@@ -41,7 +48,14 @@ public class SecurityConfig {
                 .addFilterBefore(
                         jwtAuthenticationFilter,
                         UsernamePasswordAuthenticationFilter.class
-                );
+                )
+
+    .oauth2Login(oauth -> oauth
+                .userInfoEndpoint(user -> user
+                        .userService(customOAuth2UserService) // custom user service
+                )
+                .successHandler(oAuth2SuccessHandler)      // handle JWT + refresh token on success
+        );
 
         return http.build();
     }

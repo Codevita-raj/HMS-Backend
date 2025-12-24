@@ -14,5 +14,7 @@ public class LoginResponse {
     private String email;
     private Role role;
     private UserStatus status;
+    private String tokenType = "Bearer";
     private String token;
+    private String refreshToken;
 }

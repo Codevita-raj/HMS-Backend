@@ -1,8 +1,8 @@
-package com.projecth.hms.auth.controller;
+package com.projecth.hms.user.controller;
 
-import com.projecth.hms.auth.dto.AdminCreateUserRequest;
-import com.projecth.hms.auth.dto.AdminCreateUserResponse;
-import com.projecth.hms.auth.service.AdminUserService;
+import com.projecth.hms.user.dto.AdminCreateUserRequest;
+import com.projecth.hms.user.dto.AdminCreateUserResponse;
+import com.projecth.hms.user.service.AdminUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
