@@ -58,9 +58,9 @@ public class OAuth2SuccessHandler
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
-//        response.sendRedirect(
-//                "http://localhost:4200/oauth-success?token=" + accessToken
-//        );
+        response.sendRedirect(
+                "http://localhost:4200/oauth-success?token=" + accessToken
+        );
         response.setContentType("application/json");
         response.getWriter().write("{\"token\":\"" + accessToken + "\"}");
     }
