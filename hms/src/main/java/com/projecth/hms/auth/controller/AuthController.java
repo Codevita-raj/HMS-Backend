@@ -24,28 +24,6 @@ public class AuthController {
     private final RefreshTokenService refreshTokenService;
     private final UserService userService;
     private final JwtUtil jwtUtil;
-//
-//    @PostMapping("/login")
-//    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest){
-//        LoginResponse saved = authService.login(loginRequest);
-//        return ResponseEntity.ok(saved);
-//    }
-//    @PostMapping("/refresh")
-//    public ResponseEntity<RefreshTokenResponse> refresh(
-//            @RequestBody RefreshTokenRequest request
-//    ) {
-//
-//        return ResponseEntity.ok(
-//                refreshTokenService.refreshAccessToken(request.getRefreshToken())
-//        );
-//    }
-//    @PostMapping("/logout")
-//    public ResponseEntity<?> logout(@RequestBody LogoutRequest request) {
-//
-//        refreshTokenService.revokeByToken(request.getRefreshToken());
-//
-//        return ResponseEntity.ok("Logged out successfully");
-//    }
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(

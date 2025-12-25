@@ -66,7 +66,8 @@ public class RefreshTokenService {
 
         return new RefreshTokenResponse(
                 newAccessToken,
-                newRefreshToken.getToken()
+                newRefreshToken.getToken(),
+                user.getRole()
         );
     }
     public void revokeByToken(String token) {
